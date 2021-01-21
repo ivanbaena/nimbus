@@ -1,6 +1,8 @@
 import express from 'express';
 import session from 'express-session';
 import cors from 'cors';
+import passport from 'passport';
+import passportConfig from './services/passportConfig';
 import { MongoStore, instance as mongoose } from './helpers';
 
 export const app = express();
@@ -33,3 +35,10 @@ app.use(
 // Set headers to notify server that will allow our graphql api
 // to handle incoming request from different origins
 app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+
+// Passport is wired into express as a middleware. When a request comes in,
+// Passport will examine the request's session (as set by the above config) and
+// assign the current user to the 'req.user' object.  See also servces/auth.js
+passportConfig(passport);
+app.use(passport.initialize());
+app.use(passport.session());
